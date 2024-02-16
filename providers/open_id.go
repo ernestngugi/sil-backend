@@ -34,7 +34,7 @@ func NewOpenID(clientID, clientSecret, redirectURL string) *OpenID {
 	}
 }
 
-func (p *OpenID) VerifyIDToken(token *oauth2.Token) (*oidc.IDToken, error) {
+func (p *OpenID) VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc.IDToken, error) {
 
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
@@ -45,5 +45,5 @@ func (p *OpenID) VerifyIDToken(token *oauth2.Token) (*oidc.IDToken, error) {
 		ClientID: p.ClientID,
 	}
 
-	return p.Verifier(oidConfig).Verify(context.Background(), rawIDToken)
+	return p.Verifier(oidConfig).Verify(ctx, rawIDToken)
 }
