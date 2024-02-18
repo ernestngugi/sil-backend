@@ -1,14 +1,33 @@
 package router
 
 import (
+	"context"
 	"crypto/rand"
 	"encoding/base64"
+	"fmt"
 	"net/http"
 
+	"github.com/ernestngugi/sil-backend/internal/model"
+	"github.com/ernestngugi/sil-backend/internal/web/auth"
 	"github.com/ernestngugi/sil-backend/providers"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
+
+func authMiddleware(authAuthenticator auth.Authenticator) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		ctx := c.Request.Context()
+
+		userInfo, err := authAuthenticator.TokenFromRequest(ctx, c.Request)
+		if err != nil {
+			fmt.Println("authentication error")
+		}
+
+		ctx = context.WithValue(ctx, model.CustomerKeyName, userInfo.Email)
+		c.Request = c.Request.WithContext(ctx)
+		c.Next()
+	}
+}
 
 func loginSession(
 	oidcProvider providers.OpenID,

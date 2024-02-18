@@ -8,3 +8,7 @@ type Customer struct {
 	DateCreated  time.Time `json:"date_created"`
 	DateModified time.Time `json:"date_modified"`
 }
+
+type CustomerKey string
+
+const CustomerKeyName CustomerKey = "customer_name"
