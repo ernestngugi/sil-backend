@@ -10,14 +10,16 @@ import (
 )
 
 const (
-	insertCustomerSQL  = "INSERT INTO customers (name, date_created, date_modified) VALUES ($1, $2, $3) RETURNING id"
-	selectCustomerSQL  = "SELECT id, name, date_created, date_modified FROM customers"
-	getCustomerByIDSQL = selectCustomerSQL + " WHERE id = $1"
+	insertCustomerSQL    = "INSERT INTO customers (name, date_created, date_modified) VALUES ($1, $2, $3) RETURNING id"
+	selectCustomerSQL    = "SELECT id, name, date_created, date_modified FROM customers"
+	getCustomerByIDSQL   = selectCustomerSQL + " WHERE id = $1"
+	getCustomerByNameSQL = selectCustomerSQL + " WHERE LOWER(name) = $1"
 )
 
 type (
 	CustomerRepository interface {
 		CustomerByID(ctx context.Context, operations db.SQLOperations, customerID int64) (*model.Customer, error)
+		CustomerByName(ctx context.Context, operations db.SQLOperations, name string) (*model.Customer, error)
 		Save(ctx context.Context, operations db.SQLOperations, customer *model.Customer) error
 	}
 
@@ -26,6 +28,24 @@ type (
 
 func NewCustomerRepository() CustomerRepository {
 	return &customerRepository{}
+}
+
+func (r *customerRepository) CustomerByName(
+	ctx context.Context,
+	operations db.SQLOperations,
+	name string,
+) (*model.Customer, error) {
+
+	row := operations.QueryRowContext(ctx, getCustomerByNameSQL, name)
+
+	var customer model.Customer
+
+	err := row.Scan(&customer.ID, &customer.Name, &customer.DateCreated, &customer.DateModified)
+	if err != nil {
+		return &model.Customer{}, err
+	}
+
+	return &customer, nil
 }
 
 func (r *customerRepository) CustomerByID(
