@@ -47,7 +47,7 @@ func (c *orderController) CreateOrder(
 	form *forms.CreateOrderForm,
 ) (*model.Order, error) {
 
-	exist := ctx.Value("customer_name")
+	exist := ctx.Value(model.CustomerKeyName)
 	if exist == nil {
 		return &model.Order{}, errors.New("customer credential missing")
 	}
