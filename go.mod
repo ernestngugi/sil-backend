@@ -43,6 +43,7 @@ require (
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-jose/go-jose/v3 v3.0.1 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
+	github.com/joho/godotenv v1.5.1
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
