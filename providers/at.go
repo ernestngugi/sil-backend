@@ -12,7 +12,9 @@ import (
 )
 
 type (
-	ATProvider interface{}
+	ATProvider interface{
+		Send() error
+	}
 
 	atProvider struct {
 		atBaseURL,
