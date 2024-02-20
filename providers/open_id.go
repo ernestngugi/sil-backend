@@ -3,17 +3,29 @@ package providers
 import (
 	"context"
 	"errors"
+	"os"
 
 	"github.com/coreos/go-oidc"
 	"golang.org/x/oauth2"
 )
 
-type OpenID struct {
+type OpenID interface {
+	AuthCodeURL(code string, opts... oauth2.AuthCodeOption) string
+	Exchange(ctx context.Context, token string, opts... oauth2.AuthCodeOption) (*oauth2.Token, error)
+	UserInfo(ctx context.Context, tokenSource oauth2.TokenSource) (*oidc.UserInfo, error)
+	VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc.IDToken, error)
+}
+
+type openID struct {
 	*oidc.Provider
 	oauth2.Config
 }
 
-func NewOpenID(clientID, clientSecret, redirectURL string) *OpenID {
+func NewOpenID() *openID {
+	return newOpenIDWithCredentials(os.Getenv("CLIENT_ID"), os.Getenv("CLIENT_SECRET"), os.Getenv("REDIRECT_URL"))
+}
+
+func newOpenIDWithCredentials(clientID, clientSecret, redirectURL string) *openID {
 
 	provider, err := oidc.NewProvider(context.Background(), "https://accounts.google.com")
 	if err != nil {
@@ -28,13 +40,13 @@ func NewOpenID(clientID, clientSecret, redirectURL string) *OpenID {
 		Scopes:       []string{oidc.ScopeOpenID, "profile", "email"},
 	}
 
-	return &OpenID{
+	return &openID{
 		provider,
 		oauth2Config,
 	}
 }
 
-func (p *OpenID) VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc.IDToken, error) {
+func (p *openID) VerifyIDToken(ctx context.Context, token *oauth2.Token) (*oidc.IDToken, error) {
 
 	rawIDToken, ok := token.Extra("id_token").(string)
 	if !ok {
