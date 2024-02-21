@@ -1,4 +1,4 @@
-package sil_api
+package main
 
 import (
 	"errors"

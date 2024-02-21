@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"syreclabs.com/go/faker"
+)
 
 type Customer struct {
 	ID           int64     `json:"id"`
@@ -12,3 +16,9 @@ type Customer struct {
 type CustomerKey string
 
 const CustomerKeyName CustomerKey = "customer_name"
+
+func BuildCustomer() *Customer {
+	return &Customer{
+		Name: faker.Internet().Email(),
+	}
+}
