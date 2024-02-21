@@ -12,7 +12,7 @@ import (
 
 func TestCustomerController(t *testing.T) {
 
-	t.Setenv("DATABASE_URL", "postgres://savannah:password@localhost:5433/savannah?sslmode=disable")
+	t.Setenv("DATABASE_URL", "postgres://savannah:password@localhost:5432/savannah?sslmode=disable")
 
 	ctx := context.Background()
 
@@ -21,7 +21,7 @@ func TestCustomerController(t *testing.T) {
 
 	customerRepository := repos.NewCustomerRepository()
 
-	customerController := NewCustomerController(customerRepository)
+	customerController := NewTestCustomerController()
 
 	t.Run("can create a customer", func(t *testing.T) {
 

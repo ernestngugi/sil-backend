@@ -29,6 +29,12 @@ func NewCustomerController(customerRepository repos.CustomerRepository) Customer
 	}
 }
 
+func NewTestCustomerController() *customerController {
+	return &customerController{
+		customerRepository: repos.NewCustomerRepository(),
+	}
+}
+
 func (c *customerController) CustomerByName(
 	ctx context.Context,
 	dB db.DB,

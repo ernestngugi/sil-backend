@@ -28,7 +28,7 @@ import (
 
 func TestApplicationEndpoints(t *testing.T) {
 
-	t.Setenv("DATABASE_URL", "postgres://savannah:password@localhost:5433/savannah?sslmode=disable")
+	t.Setenv("DATABASE_URL", "postgres://savannah:password@localhost:5432/savannah?sslmode=disable")
 	t.Setenv("OAUTH_STATE_STRING", "123456")
 
 	ctx := context.Background()
@@ -55,6 +55,7 @@ func TestApplicationEndpoints(t *testing.T) {
 	appRouter.GET("/customers/:name", customerByName(dB, customerController))
 
 	unAuthenticatedUser.POST("/callback", handleLogin(dB, customerController, oidcProvider))
+	unAuthenticatedUser.POST("/login", loginSession(oidcProvider))
 
 	t.Run("can process oauth2 callback", func(t *testing.T) {
 

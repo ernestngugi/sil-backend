@@ -1,0 +1,70 @@
+name: build and deploy sil
+
+on:
+  push:
+    branches:
+      - main
+
+  workflow_dispatch:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy-sil:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+    - name: Checkout code 
+      uses: actions/checkout@v4
+
+    - uses: actions/setup-go@v3
+      with:
+        go-version: '1.21'
+
+    - name: build application
+      run: |
+        env GOOS=linux go build -o sil-api cmd/sil-api/main.go
+
+    - name: install goose 
+      run: |
+        curl -fsSL \
+          https://raw.githubusercontent.com/pressly/goose/master/install.sh | \
+          sh
+
+    - name: Run migrations
+      run: |
+        /usr/local/bin/goose -dir ./internal/db/migrations mysql "${{ secrets.DATABASE_USER }}:${{ secrets.DATABASE_PASSWORD }}@tcp(${{ secrets.DATABASE_HOST }}:3308)/sil" up
+
+    - name: Setup ssh key
+      run: |
+        mkdir ~/.ssh
+        echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -t rsa github.com
+
+    - name: Copy binary to remote server
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        port: 22
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        source: ./sil-api
+        target: /tmp
+
+    - name: Run remote script 
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        username: ${{ secrets.SSH_USERNAME }}
+        port: 22
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        script_stop: true
+        script: | 
+          sudo systemctl stop sil-api.service
+          sudo rm -f /var/www/sil-api/sil-api
+          sudo mv /tmp/sil-api /var/www/sil-api
+          sudo systemctl start sil-api.service
