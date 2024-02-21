@@ -17,6 +17,7 @@ type AppRouter struct {
 
 func BuildRouter(
 	dB db.DB,
+	atProvider providers.ATProvider,
 	oidcProvider providers.OpenID,
 ) *AppRouter {
 
@@ -24,7 +25,7 @@ func BuildRouter(
 	orderRepository := repos.NewOrderRepository()
 
 	customerController := controller.NewCustomerController(customerRepository)
-	orderController := controller.NewOrderController(customerRepository, orderRepository)
+	orderController := controller.NewOrderController(atProvider, customerRepository, orderRepository)
 
 	router := gin.Default()
 	appRouter := router.Group("/v1")

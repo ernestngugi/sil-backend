@@ -9,11 +9,13 @@ import (
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/ernestngugi/sil-backend/internal/model"
 )
 
 type (
-	ATProvider interface{
-		Send() error
+	ATProvider interface {
+		Send(request *model.ATRequest) error
 	}
 
 	atProvider struct {
@@ -39,13 +41,13 @@ func newATProviderWithCredentials(atBaseURL, username, key string) ATProvider {
 	}
 }
 
-func (p *atProvider) Send() error {
+func (p *atProvider) Send(req *model.ATRequest) error {
 
 	atRequest := map[string]string{
 		"username": p.username,
-		"message":  "",
-		"to":       "",
-		"from":     "",
+		"message":  req.Message,
+		"to":       req.Number,
+		"from":     "SIL",
 		"enqueue":  "1",
 	}
 

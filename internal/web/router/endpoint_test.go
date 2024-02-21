@@ -36,13 +36,14 @@ func TestApplicationEndpoints(t *testing.T) {
 	dB := db.InitDB()
 	defer dB.Close()
 
+	atProvider := mocks.NewMockATProvider()
 	oidcProvider := mocks.NewMockOpenID()
 
 	customerRepository := repos.NewCustomerRepository()
 	orderRepository := repos.NewOrderRepository()
 
 	customerController := controller.NewCustomerController(customerRepository)
-	orderController := controller.NewOrderController(customerRepository, orderRepository)
+	orderController := controller.NewOrderController(atProvider, customerRepository, orderRepository)
 
 	testRouter := gin.Default()
 	appRouter := testRouter.Group("/v1")
@@ -84,7 +85,7 @@ func TestApplicationEndpoints(t *testing.T) {
 		assert.NotZero(t, customer.ID)
 		assert.NotZero(t, customer.DateCreated)
 		assert.NotZero(t, customer.DateModified)
-		
+
 		assert.Equal(t, w.Code, http.StatusOK)
 		tokenHeader := w.Header().Get("X-SIL-TOKEN")
 		assert.NotEmpty(t, tokenHeader)
