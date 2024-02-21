@@ -1,0 +1,20 @@
+SIL API
+
+GETTING STATED
+
+- Clone repo
+- Download Docker [Download](https://docs.docker.com/get-docker/)
+- Install Golang 1.21 [Download](https://golang.org/dl/#go1.21)
+- Install goose: `go get -u github.com/pressly/goose/cmd/goose`
+- Install gow: `go get -u github.com/mitranim/gow`
+- Create local env file: `cp .env.sample .env`
+- Update env files with correct configuration
+- Set up application: `make up` or `docker-compose up`
+- Run server: `make api`
+
+Run Unit Tests 
+=======================
+
+To run unit tests:
+- Set up appilcation: `make up`
+- Run test: `make test`
