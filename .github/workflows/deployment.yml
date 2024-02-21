@@ -4,12 +4,10 @@ on:
   push:
     branches:
       - main
-      - ci-cd-pipelines
 
   workflow_dispatch:
     branches:
       - main
-      - ci-cd-pipelines
 
 jobs:
   build-and-deploy-sil:
