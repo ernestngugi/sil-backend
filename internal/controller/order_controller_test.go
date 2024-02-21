@@ -8,6 +8,7 @@ import (
 	"github.com/ernestngugi/sil-backend/internal/forms"
 	"github.com/ernestngugi/sil-backend/internal/model"
 	"github.com/ernestngugi/sil-backend/internal/repos"
+	"github.com/ernestngugi/sil-backend/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,10 +21,11 @@ func TestOrderController(t *testing.T) {
 	dB := db.InitDB()
 	defer dB.Close()
 
-	customerRepository := repos.NewCustomerRepository()
-	orderRepository := repos.NewOrderRepository()
+	atProvider := mocks.NewMockATProvider()
 
-	orderController := NewOrderController(customerRepository, orderRepository)
+	customerRepository := repos.NewCustomerRepository()
+
+	orderController := NewTestOrderController(atProvider)
 
 	t.Run("cannot create an order if credentials are missing", func(t *testing.T) {
 
@@ -64,6 +66,17 @@ func TestOrderController(t *testing.T) {
 
 		clearOrderTable(ctx, dB)
 		clearCustomerTable(ctx, dB)
+	})
+
+	t.Run("can send an sms request to africas talking", func(t *testing.T) {
+
+		atRequest := &model.ATRequest{
+			Number:  "25547283895983",
+			Message: "test",
+		}
+
+		err := orderController.sendOrderSMS(atRequest)
+		assert.NoError(t, err)
 	})
 }
 

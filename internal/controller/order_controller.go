@@ -3,12 +3,14 @@ package controller
 import (
 	"context"
 	"errors"
+	"fmt"
 	"strings"
 
 	"github.com/ernestngugi/sil-backend/internal/db"
 	"github.com/ernestngugi/sil-backend/internal/forms"
 	"github.com/ernestngugi/sil-backend/internal/model"
 	"github.com/ernestngugi/sil-backend/internal/repos"
+	"github.com/ernestngugi/sil-backend/providers"
 )
 
 type (
@@ -18,18 +20,31 @@ type (
 	}
 
 	orderController struct {
+		atProvider         providers.ATProvider
 		customerRepository repos.CustomerRepository
 		orderRepository    repos.OrderRepository
 	}
 )
 
 func NewOrderController(
+	atProvider providers.ATProvider,
 	customerRepository repos.CustomerRepository,
 	orderRepository repos.OrderRepository,
 ) OrderController {
 	return &orderController{
+		atProvider:         atProvider,
 		customerRepository: customerRepository,
 		orderRepository:    orderRepository,
+	}
+}
+
+func NewTestOrderController(
+	atProvider providers.ATProvider,
+) *orderController {
+	return &orderController{
+		atProvider:         atProvider,
+		customerRepository: repos.NewCustomerRepository(),
+		orderRepository:    repos.NewOrderRepository(),
 	}
 }
 
@@ -73,5 +88,16 @@ func (c *orderController) CreateOrder(
 		return &model.Order{}, err
 	}
 
+	atRequest := &model.ATRequest{
+		Number:  "254728389583",
+		Message: fmt.Sprintf("your order %v has been received and is on your way", order.ID),
+	}
+
+	go c.sendOrderSMS(atRequest)
+
 	return order, nil
+}
+
+func (c *orderController) sendOrderSMS(request *model.ATRequest) error {
+	return c.atProvider.Send(request)
 }

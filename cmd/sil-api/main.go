@@ -36,9 +36,10 @@ func main() {
 		port = defaultPort
 	}
 
+	atProvider := providers.NewATProvider()
 	oidcProvider := providers.NewOpenID()
 
-	appRouter := router.BuildRouter(dB, oidcProvider)
+	appRouter := router.BuildRouter(dB, atProvider, oidcProvider)
 
 	server := &http.Server{
 		Addr:    ":" + port,
