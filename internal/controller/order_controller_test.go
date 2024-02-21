@@ -71,7 +71,7 @@ func TestOrderController(t *testing.T) {
 	t.Run("can send an sms request to africas talking", func(t *testing.T) {
 
 		atRequest := &model.ATRequest{
-			Number:  "25547283895983",
+			Number:  "254728389583",
 			Message: "test",
 		}
 
