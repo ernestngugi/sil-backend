@@ -17,3 +17,6 @@ migrate:
 
 rollback:
 	goose -dir 'internal/db/migrations' postgres ${DATABASE_URL} down
+
+test:
+	go test -coverprofile=coverage.out ./...

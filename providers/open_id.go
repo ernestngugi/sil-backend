@@ -20,7 +20,7 @@ type openID struct {
 }
 
 func NewOpenID() *openID {
-	return newOpenIDWithCredentials(os.Getenv("CLIENT_ID"), os.Getenv("CLIENT_SECRET"), os.Getenv("REDIRECT_URL"))
+	return newOpenIDWithCredentials(os.Getenv("OAUTH_CLIENT_ID"), os.Getenv("OAUTH_CLIENT_SECRET"), os.Getenv("OAUTH_REDIRECT_URL"))
 }
 
 func newOpenIDWithCredentials(clientID, clientSecret, redirectURL string) *openID {
