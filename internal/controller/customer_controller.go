@@ -23,7 +23,7 @@ type (
 	}
 )
 
-func NewCustomerRepository(customerRepository repos.CustomerRepository) CustomerController {
+func NewCustomerController(customerRepository repos.CustomerRepository) CustomerController {
 	return &customerController{
 		customerRepository: customerRepository,
 	}

@@ -9,3 +9,8 @@ type Order struct {
 	Item        string    `json:"item"`
 	DateCreated time.Time `json:"date_created"`
 }
+
+type ATRequest struct {
+	Number  string
+	Message string
+}

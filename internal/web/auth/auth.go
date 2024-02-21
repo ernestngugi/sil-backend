@@ -39,11 +39,6 @@ func (a *authenticator) TokenFromRequest(ctx context.Context, request *http.Requ
 		return &oidc.UserInfo{}, err
 	}
 
-	_, err = a.oidcProvider.VerifyIDToken(ctx, authToken)
-	if err != nil {
-		return &oidc.UserInfo{}, err
-	}
-
 	userInfo, err := a.oidcProvider.UserInfo(ctx, oauth2.StaticTokenSource(authToken))
 	if err != nil {
 		return &oidc.UserInfo{}, errors.New("failed to get user info")
